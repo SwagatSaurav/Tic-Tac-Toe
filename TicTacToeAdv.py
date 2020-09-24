@@ -67,21 +67,26 @@ def start_up():
     global matrix
     global continueFlag
     matrix=input("Which matrix you want to play?")
-    if (int(matrix)) < 3:
-        print("Not a valid version")
-        print("Matrix set to default: 3")
+    if matrix.isdigit():
+        if (int(matrix)) < 3:
+            print("Not a valid version")
+            print("Matrix set to default: 3")
+            matrix=3
+        print("Setting up your board")
+    else:
+        print("Not a suitable matrix for Tic Tac Toe")
+        print("Setting default matrix to: 3")
         matrix=3
-    print("Setting up your board")
+        print("Setting up your board")
     for i in range(int(matrix)):
         for j in range(int(matrix)):
             board.append("-")
-    start_player=input("Who should start?")
+    start_player=input("Who should start? X or O")
     while start_player not in ['o','O','x','X']:
         print("Not a valid player. Choose X or O:")
         start_player = input("Who should start?")
-
     curr_player=start_player.upper()
-    print("Flag:", continueFlag)
+    # print("Flag:", continueFlag)
     if continueFlag==1:
         play_game()
     return
@@ -212,7 +217,6 @@ def check_diags_advanced():
     global matrix
     global game_is_on
     global board
-    print("inside diagonal chk")
     diagChkBoard=mirror(board)
     d1=diagChecker(board)
     d2=diagChecker(diagChkBoard)
