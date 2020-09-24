@@ -1,29 +1,15 @@
 import sys
 
-matrix=3
-board=[]
-game_is_on=True
-place=0
+matrix = 3
+board = []
+game_is_on = True
+place = 0
 winner = None
-curr_player="X"
-continueFlag=0
-
-def reset_game():
-    global matrix
-    global board
-    global game_is_on
-    global place
-    global winner
-    global curr_player
-    matrix = 3
-    board = []
-    game_is_on = True
-    place = 0
-    winner = None
-    curr_player = "X"
-    return
+curr_player = "X"
+continueFlag = 0
 
 
+#Display Matrix Board for Tic Tac Toe
 def display_board():
     global matrix
     boardpos = 0
@@ -37,89 +23,43 @@ def display_board():
         sys.stdout.flush()
 
 
+#Checks the player's input for filling up board
 def handel_turn(player):
     global matrix
-    m=(int(matrix)*int(matrix))
+    m = (int(matrix)*int(matrix))
     print(player + "   Turn now:")
-    pos=input(f"Choose a positionfrom 1-{m}:")
-    curboard=[]
+    pos = input(f"Choose a positionfrom 1-{m}:")
+    while not pos.isdigit():
+        pos = input(f"Invalid input. Choose a position from 1-{m}:")
+    curboard = []
     v=1
     for i in range((int(matrix))):
         for j in range((int(matrix))):
             curboard.append(v)
-            v=v+1
+            v = v+1
     valid = False
     while not valid:
         while int(pos) not in curboard:
             pos = input(f"Invalid input. Choose a positionfrom 1-{m}:")
-        position=int(pos)-1
+            while not pos.isdigit():
+                pos = input(f"Invalid input. Choose a position from 1-{m}:")
+        position = int(pos)-1
         if board[position] == '-':
-            valid= True
+            valid = True
         else:
             print("Position is already used")
             break
-    board[position]=player
+    board[position] = player
     display_board()
 
 
-def start_up():
-    global curr_player
-    global matrix
-    global continueFlag
-    matrix=input("Which matrix you want to play?")
-    if matrix.isdigit():
-        if (int(matrix)) < 3:
-            print("Not a valid version")
-            print("Matrix set to default: 3")
-            matrix=3
-        print("Setting up your board")
-    else:
-        print("Not a suitable matrix for Tic Tac Toe")
-        print("Setting default matrix to: 3")
-        matrix=3
-        print("Setting up your board")
-    for i in range(int(matrix)):
-        for j in range(int(matrix)):
-            board.append("-")
-    start_player=input("Who should start? X or O")
-    while start_player not in ['o','O','x','X']:
-        print("Not a valid player. Choose X or O:")
-        start_player = input("Who should start?")
-    curr_player=start_player.upper()
-    # print("Flag:", continueFlag)
-    if continueFlag==1:
-        play_game()
-    return
-
-def play_game():
-    global winner
-    global game_is_on
-    global continueFlag
-    display_board()
-    while game_is_on:
-        handel_turn(curr_player)
-        check_if_game_over()
-        flip_player()
-    if winner == "X" or winner == "O":
-        print(winner, "WON!!")
-    elif winner ==None:
-        print("TIE!!")
-    userDec=input("Do you want another game? Y/N")
-    if userDec == 'Y' or userDec=='y':
-        print("Lets Start Again:::")
-        continueFlag = 1
-        reset_game()
-        start_up()
-    else:
-        continueFlag=0
-        print("Bye!!")
-
-
+#Checks if the game is over. Conditions are either the board is full which results in TIE or any one player has won
 def check_if_game_over():
     check_if_win()
     check_if_tie()
 
 
+#Checks if any player has Won!!
 def check_if_win():
     global winner
     row_winner = check_rows_advanced()
@@ -136,6 +76,7 @@ def check_if_win():
     return
 
 
+#Checks if all the board is used up
 def check_if_tie():
     global game_is_on
     if "-" not in board:
@@ -143,6 +84,7 @@ def check_if_tie():
     return
 
 
+#Checks if any of the row is filled by either X or O
 def check_rows_advanced():
     global matrix
     global game_is_on
@@ -154,16 +96,16 @@ def check_rows_advanced():
         rowVal = []
         for j in range(matrixVal):
             rowVal.append(board[pos])
-            pos=pos+1
+            pos = pos+1
         # res = all(ele == rowVal[0] for ele in rowVal)
-        ele=board[pos-1]
-        chk=True
+        ele = board[pos-1]
+        chk = True
         for item in rowVal:
-            if ele!=item or item=="-":
-                chk=False
+            if ele != item or item == "-":
+                chk = False
                 break
             else:
-                chk=True
+                chk = True
         if chk:
             game_is_on = False
             rowChk.append("True")
@@ -173,11 +115,12 @@ def check_rows_advanced():
     return
 
 
+#Checks if any of the column is filled by either X or O. This method uses the transposed matrix and then check the rows.
 def check_cols_advanced():
     global matrix
     global game_is_on
     global board
-    colChkBoard=transpose(board)
+    colChkBoard = transpose(board)
     matrixVal = int(matrix)
     colChk = []
     pos = 0
@@ -202,10 +145,12 @@ def check_cols_advanced():
             colChk.append("False")
     return
 
+
+#Transposes the given list. Length of list must be perfect square value.
 def transpose(b):
     global matrix
-    m=int(matrix)
-    transposedBoard=[]
+    m = int(matrix)
+    transposedBoard = []
     for i in range((int(matrix))):
         for j in range((int(matrix))):
             transposedBoard.append(b[((j * m) + i)-1])
@@ -213,19 +158,22 @@ def transpose(b):
     return transposedBoard
 
 
+#Checks if any of the diagonal is filled by either X or O. This method uses the mirror matrix to check second diagonal.
 def check_diags_advanced():
     global matrix
     global game_is_on
     global board
-    diagChkBoard=mirror(board)
+    diagChkBoard = mirror(board)
     d1=diagChecker(board)
     d2=diagChecker(diagChkBoard)
-    if d1=="X" or d1=="O":
+    if d1 == "X" or d1 == "O":
         return d1
-    elif d2=="X" or d2=="O":
+    elif d2 == "X" or d2 == "O":
         return d2
     return
 
+
+#This method checks if diagonal if filled with X or O.
 def diagChecker(b):
     global matrix
     global game_is_on
@@ -254,19 +202,20 @@ def diagChecker(b):
     return
 
 
+#Mirrors the given list. Length of list must be perfect square value.
 def mirror(b):
     global matrix
-    mirroredBoard=[]
-    m=int(matrix)
-    n = int(matrix)
+    mirroredBoard = []
+    m = n = int(matrix)
     for i in range((int(matrix))):
         m = n * (i + 1)
         for j in range((int(matrix))):
             mirroredBoard.append(b[m-1])
-            m=m-1
+            m = m-1
     return mirroredBoard
 
 
+#Flips player from X to O and vice-versa on invocation.
 def flip_player():
     global curr_player
     if curr_player == "X":
@@ -275,6 +224,95 @@ def flip_player():
         curr_player = "X"
     return
 
-#handle game flow
+
+#Start-up settings.
+def start_up():
+    global curr_player
+    global matrix
+    global continueFlag
+    matrix = input("Which matrix you want to play?")
+    if matrix.isdigit():
+        if (int(matrix)) < 3:
+            print("Not a valid version")
+            print("Matrix set to default: 3")
+            matrix = 3
+        print("Setting up your board")
+    else:
+        print("Not a suitable matrix for Tic Tac Toe")
+        print("Setting default matrix to: 3")
+        matrix = 3
+        print("Setting up your board")
+    for i in range(int(matrix)):
+        for j in range(int(matrix)):
+            board.append("-")
+    start_player = input("Who should start? X or O")
+    while start_player not in ['o', 'O', 'x', 'X']:
+        print("Not a valid player. Choose X or O:")
+        start_player = input("Who should start?")
+    curr_player = start_player.upper()
+    # print("Flag:", continueFlag)
+    if continueFlag == 1:
+        play_game()
+    return
+
+
+#Flow of the game is controlled here.
+def play_game():
+    global winner
+    global game_is_on
+    global continueFlag
+    display_board()
+    while game_is_on:
+        handel_turn(curr_player)
+        check_if_game_over()
+        flip_player()
+    if winner == "X" or winner == "O":
+        print(winner, "WON!!")
+    elif winner is None:
+        print("TIE!!")
+    userDec = input("Do you want another game? Y/N")
+    if userDec.upper() == 'Y':
+        print("Lets Start Again:::")
+        continueFlag = 1
+        reset_game()
+        start_up()
+    else:
+        continueFlag = 0
+        print("Bye!!")
+        creator()
+
+
+#Resets all paramaeters for the game to restart.
+def reset_game():
+    global matrix
+    global board
+    global game_is_on
+    global place
+    global winner
+    global curr_player
+    matrix = 3
+    board = []
+    game_is_on = True
+    place = 0
+    winner = None
+    curr_player = "X"
+    return
+
+
+#Display creator Information
+def creator():
+    print(" ")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$  Hello !!  $$$$$$$$$$$$$$$")
+    print("$$$$$$$$ Welcome to TIC TAC TOE $$$$$$$$$")
+    print("Game created & presented by SWAGAT SAURAV")
+    print("$$$$$$$$$$$$$   ENJOY   $$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print(" ")
+    print(" ")
+
+
+#Game flow
+creator()
 start_up()
 play_game()
